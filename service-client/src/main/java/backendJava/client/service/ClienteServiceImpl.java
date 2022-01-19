@@ -3,8 +3,8 @@ package backendJava.client.service;
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
 import backendJava.client.repository.ClienteRepository;
+import backendJava.client.repository.FotoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +16,6 @@ public class ClienteServiceImpl implements ClienteService{
 
     @Override
     public List<Cliente> listAllCliente() {
-
         return clienteRepository.findAll();
     }
 
@@ -27,23 +26,23 @@ public class ClienteServiceImpl implements ClienteService{
 
     @Override
     public Cliente createCliente(Cliente cliente) {
-        cliente.setFoto("CREATED BUT NEEDS FOTO");
         return clienteRepository.save(cliente);
     }
 
     @Override
     public Cliente updateCliente(Cliente cliente) {
 
-        if(cliente == null) return null;
+        Cliente clienteDB = getCliente(cliente.getId());
+        if(clienteDB == null) return null;
 
-        cliente.setNombres(cliente.getNombres());
-        cliente.setApellidos(cliente.getApellidos());
-        cliente.setEdad(cliente.getEdad());
-        cliente.setCiudad(cliente.getCiudad());
-        cliente.setTipoIdentificacion(cliente.getTipoIdentificacion());
-        cliente.setNumeroIdentificacion(cliente.getNumeroIdentificacion());
+        clienteDB.setNombres(cliente.getNombres());
+        clienteDB.setApellidos(cliente.getApellidos());
+        clienteDB.setEdad(cliente.getEdad());
+        clienteDB.setCiudad(cliente.getCiudad());
+        clienteDB.setTipoIdentificacion(cliente.getTipoIdentificacion());
+        clienteDB.setNumeroIdentificacion(cliente.getNumeroIdentificacion());
 
-        return clienteRepository.save(cliente);
+        return clienteRepository.save(clienteDB);
     }
 
     @Override

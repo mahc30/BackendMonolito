@@ -57,6 +57,22 @@ public class ClienteServiceMockTest {
     }
 
     @Test
+    public void whenValidCreateCliente_ThenReturnCliente(){
+        Cliente cliente =  Cliente.builder()
+                .id(5L)
+                .nombres("Juanito")
+                .apellidos("Alcachofa")
+                .numeroIdentificacion("188941981")
+                .foto("TODO")
+                .ciudad(Ciudad.builder().id(1L).build())
+                .tipoIdentificacion(TipoIdentificacion.builder().id(2L).build())
+                .build();
+
+        Cliente created = clienteService.createCliente(cliente);
+        Assertions.assertThat(created.getId()).isEqualTo(cliente.getId());
+    }
+
+    @Test
     public void whenValidUpdateCliente_ThenReturnUpdatedCliente(){
         Cliente cliente = clienteService.getCliente(5L);
         cliente.setNombres("Hamilton");
@@ -67,7 +83,7 @@ public class ClienteServiceMockTest {
     }
 
     @Test
-    public void whenValidDeleteCliente_ThenReturnNull(){
+    public void whenValidDeleteCliente_ThenReturnVerifyMethodIsCalled(){
 
         Cliente cliente = clienteService.getCliente(5L);
         Assertions.assertThat(cliente).isNotNull();

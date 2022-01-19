@@ -1,6 +1,5 @@
 package backendJava.client.repository;
 
-import backendJava.client.entity.Ciudad;
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,5 +1,6 @@
 package backendJava.client.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,10 +25,12 @@ public class Cliente {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ciudad_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Ciudad ciudad;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private TipoIdentificacion tipoIdentificacion;
 
 }
