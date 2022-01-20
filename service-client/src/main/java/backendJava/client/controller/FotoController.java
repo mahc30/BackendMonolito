@@ -52,12 +52,18 @@ public class FotoController {
     }
 
     @PutMapping(value="/{id}")
-    public ResponseEntity<Foto> updateFoto(@PathVariable("id") String id, @ModelAttribute Foto foto){
-        foto.setId(id);
-        Foto fotoDB = fotoService.updateFoto(foto);
+    public ResponseEntity updateFoto(@PathVariable("id") String id, @RequestPart MultipartFile file){
+        Foto foto = fotoService.getFoto(id);
+        try{
+            foto.setFile(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo convertir la imagen");
+        }
 
-        if(fotoDB == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(fotoDB);
+        foto = fotoService.updateFoto(foto);
+
+        if(foto == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(foto);
     }
 
     @DeleteMapping(value="/{id}")

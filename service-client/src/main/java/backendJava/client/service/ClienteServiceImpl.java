@@ -53,6 +53,9 @@ public class ClienteServiceImpl implements ClienteService{
 
     @Override
     public Cliente findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroIdentificacion) {
-        return clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(tipoId, numeroIdentificacion);
+        Cliente cliente = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(tipoId, numeroIdentificacion);
+        if(cliente == null) return null;
+
+        return cliente;
     }
 }

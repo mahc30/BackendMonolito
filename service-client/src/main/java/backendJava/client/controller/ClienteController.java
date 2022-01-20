@@ -3,7 +3,6 @@ package backendJava.client.controller;
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
 import backendJava.client.service.ClienteService;
-import ch.qos.logback.core.net.server.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,9 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
-@RequestMapping(value = "/clients", consumes = MediaType.ALL_VALUE)
+@RequestMapping(value = "/clients", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClienteController {
     @Autowired
     private ClienteService clienteService;
@@ -27,8 +27,8 @@ public class ClienteController {
         return ResponseEntity.ok(clients);
     }
 
-    @GetMapping(value="/{tipoId}/{numeroId}")
-    public ResponseEntity<Cliente> getCliente(@PathVariable("tipoId") Long tipoIdentificacionId,@PathVariable("numeroId") String numeroIdentificacion){
+    @GetMapping(value="/{tipoIdentificacionId}/{numeroIdentificacion}")
+    public ResponseEntity<Cliente> getCliente(@PathVariable("tipoIdentificacionId") Long tipoIdentificacionId,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
         if(tipoIdentificacionId == null
         || numeroIdentificacion == null) return ResponseEntity.badRequest().build();
 

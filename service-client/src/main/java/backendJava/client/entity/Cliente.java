@@ -1,6 +1,7 @@
 package backendJava.client.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import javax.persistence.*;
 public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(hidden = true)
     private Long id;
     private String nombres;
     private String apellidos;
@@ -26,7 +28,6 @@ public class Cliente {
 
     private int edad;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ciudad_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -36,6 +37,4 @@ public class Cliente {
     @JoinColumn(name = "tipo_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private TipoIdentificacion tipoIdentificacion;
-
-
 }
