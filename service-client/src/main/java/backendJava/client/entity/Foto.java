@@ -1,5 +1,6 @@
 package backendJava.client.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,6 @@ public class Foto implements Serializable {
     @Id
     @NotNull
     private String id;
-
-    private String tipo_archivo;
-    private Binary foto;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Binary file;
 }

@@ -32,8 +32,7 @@ public class FotoServiceImpl implements FotoService{
         Foto fotoDB = getFoto(foto.getId());
         if(fotoDB == null)return null;
 
-        fotoDB.setFoto(foto.getFoto());
-        fotoDB.setTipo_archivo(foto.getTipo_archivo());
+        fotoDB.setFile(foto.getFile());
 
         return fotoRepository.save(fotoDB);
     }

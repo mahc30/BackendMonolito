@@ -21,13 +21,12 @@ public class ClienteRepositoryMockTest {
                 .nombres("Juanito")
                 .apellidos("Alcachofa")
                 .numeroIdentificacion("188941981")
-                .foto("TODO")
+                .fotoMongoId("TODO")
                 .ciudad(Ciudad.builder().id(1L).build())
                 .tipoIdentificacion(TipoIdentificacion.builder().id(2L).build())
                 .build();
 
         clienteRepository.save(cliente1);
-
 
         Cliente founds = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(cliente1.getTipoIdentificacion(), cliente1.getNumeroIdentificacion());
 

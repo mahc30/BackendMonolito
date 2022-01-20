@@ -12,10 +12,4 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.io.Serializable;
 
 @Repository
-public interface FotoRepository  extends MongoRepository<Foto, String>{
-    @Query("{id: '?0'}")
-    Foto findItemById(String id);
-
-
-    public long count();
-}
+public interface FotoRepository  extends MongoRepository<Foto, String>{}

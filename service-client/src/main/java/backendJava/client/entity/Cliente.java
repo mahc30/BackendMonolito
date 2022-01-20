@@ -20,8 +20,12 @@ public class Cliente {
     private String apellidos;
     @Column(name = "NUMEROIDENTIFICACION")
     private String numeroIdentificacion;
+
+    @Column(name = "FOTOMONGOID")
+    private String fotoMongoId; //String identificación de Mongo
+
     private int edad;
-    private String foto; //String identificación de Mongo
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ciudad_id")
@@ -32,5 +36,6 @@ public class Cliente {
     @JoinColumn(name = "tipo_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private TipoIdentificacion tipoIdentificacion;
+
 
 }

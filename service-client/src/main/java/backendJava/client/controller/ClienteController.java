@@ -45,4 +45,19 @@ public class ClienteController {
         Cliente createdClient = clienteService.createCliente(client);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdClient);
     }
+
+    @PutMapping(value="/{id}")
+    public ResponseEntity<Cliente> updateCliente(@PathVariable("id") Long id, @RequestBody Cliente cliente){
+        cliente.setId(id);
+        Cliente clienteDB = clienteService.updateCliente(cliente);
+
+        if(clienteDB == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(clienteDB);
+    }
+
+    @DeleteMapping(value="/{id}")
+    public ResponseEntity<Cliente> deleteCliente(@PathVariable("id") Long id){
+        clienteService.deleteCliente(id);
+        return  ResponseEntity.ok().build();
+    }
 }

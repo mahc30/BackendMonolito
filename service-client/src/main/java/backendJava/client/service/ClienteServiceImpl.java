@@ -3,7 +3,6 @@ package backendJava.client.service;
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
 import backendJava.client.repository.ClienteRepository;
-import backendJava.client.repository.FotoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +40,7 @@ public class ClienteServiceImpl implements ClienteService{
         clienteDB.setCiudad(cliente.getCiudad());
         clienteDB.setTipoIdentificacion(cliente.getTipoIdentificacion());
         clienteDB.setNumeroIdentificacion(cliente.getNumeroIdentificacion());
+        clienteDB.setFotoMongoId(cliente.getFotoMongoId());
 
         return clienteRepository.save(clienteDB);
     }

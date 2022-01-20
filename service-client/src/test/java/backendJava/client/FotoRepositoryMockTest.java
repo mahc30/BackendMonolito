@@ -2,18 +2,15 @@ package backendJava.client;
 
 import backendJava.client.entity.Foto;
 import backendJava.client.repository.FotoRepository;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.assertj.core.api.Assertions;
 import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -41,8 +38,7 @@ public class FotoRepositoryMockTest {
             img  = Files.readAllBytes(Paths.get("./testImage.png"));
             imagenTest = new MockMultipartFile("testImage.png", "testImage.png", "png", img);
             foto = Foto.builder()
-                    .tipo_archivo("jpg")
-                    .foto(new Binary(BsonBinarySubType.BINARY, imagenTest.getBytes()))
+                    .file(new Binary(BsonBinarySubType.BINARY, imagenTest.getBytes()))
                     .build();
             Foto result = fotoRepository.save(foto);
             Assertions.assertThat(result.getId()).isNotEmpty();
