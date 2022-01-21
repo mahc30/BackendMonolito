@@ -58,4 +58,10 @@ public class ClienteServiceImpl implements ClienteService{
 
         return cliente;
     }
+
+    @Override
+    public List<Cliente> findByEdadGreaterThan(Long edad) {
+        List<Cliente> clientes = clienteRepository.findByEdadGreaterThan(edad);
+        return clientes;
+    }
 }

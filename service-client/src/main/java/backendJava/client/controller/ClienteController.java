@@ -2,12 +2,16 @@ package backendJava.client.controller;
 
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
+import backendJava.client.exception.Cliente.ClienteAlreadyExistsException;
+import backendJava.client.exception.Cliente.ClienteNotFoundException;
 import backendJava.client.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 
 import java.util.List;
 
@@ -15,6 +19,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 @RequestMapping(value = "/clients", produces = MediaType.APPLICATION_JSON_VALUE)
+@Validated
 public class ClienteController {
     @Autowired
     private ClienteService clienteService;
@@ -28,36 +33,46 @@ public class ClienteController {
     }
 
     @GetMapping(value="/{tipoIdentificacionId}/{numeroIdentificacion}")
-    public ResponseEntity<Cliente> getCliente(@PathVariable("tipoIdentificacionId") Long tipoIdentificacionId,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
-        if(tipoIdentificacionId == null
-        || numeroIdentificacion == null) return ResponseEntity.badRequest().build();
+    public ResponseEntity<Cliente> getCliente(@PathVariable("tipoIdentificacionId") TipoIdentificacion tipoIdentificacion,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
 
         Cliente client = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(
-                TipoIdentificacion.builder().id(tipoIdentificacionId).build(),
+                tipoIdentificacion,
                 numeroIdentificacion );
 
-        if(client == null) return ResponseEntity.noContent().build();
+        if(client == null) throw new ClienteNotFoundException(tipoIdentificacion, numeroIdentificacion);
         return  ResponseEntity.ok(client);
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> createCliente(@RequestBody Cliente client){
-        Cliente createdClient = clienteService.createCliente(client);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdClient);
+    public ResponseEntity<Cliente> createCliente( @RequestBody Cliente client){
+
+        Cliente clienteDB = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(client.getTipoIdentificacion(), client.getNumeroIdentificacion());
+        if(clienteDB != null) throw new ClienteAlreadyExistsException(clienteDB.getTipoIdentificacion(), clienteDB.getNumeroIdentificacion());
+
+        clienteDB = clienteService.createCliente(client);
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteDB);
     }
 
-    @PutMapping(value="/{id}")
-    public ResponseEntity<Cliente> updateCliente(@PathVariable("id") Long id, @RequestBody Cliente cliente){
-        cliente.setId(id);
-        Cliente clienteDB = clienteService.updateCliente(cliente);
+    @PutMapping(value="/{tipoIdentificacionId}/{numeroIdentificacion}")
+    public ResponseEntity<Cliente> updateCliente(@RequestBody Cliente client, @PathVariable("tipoIdentificacionId") TipoIdentificacion tipoIdentificacion,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
+        Cliente clienteDB = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(tipoIdentificacion, numeroIdentificacion);
+        if(clienteDB == null) throw new ClienteNotFoundException(client.getTipoIdentificacion(), client.getNumeroIdentificacion());
 
-        if(clienteDB == null) return ResponseEntity.notFound().build();
+        client.setId(clienteDB.getId());
+        clienteDB = clienteService.updateCliente(client);
+
         return ResponseEntity.ok(clienteDB);
     }
 
-    @DeleteMapping(value="/{id}")
-    public ResponseEntity<Cliente> deleteCliente(@PathVariable("id") Long id){
-        clienteService.deleteCliente(id);
+    @DeleteMapping(value="/{tipoIdentificacionId}/{numeroIdentificacion}")
+    public ResponseEntity<Cliente> deleteCliente(@PathVariable("tipoIdentificacionId") TipoIdentificacion tipoIdentificacion,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
+        Cliente client = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(
+                tipoIdentificacion,
+                numeroIdentificacion);
+
+        if(client == null) throw new ClienteNotFoundException(tipoIdentificacion, numeroIdentificacion);
+
+        clienteService.deleteCliente(client.getId());
         return  ResponseEntity.ok().build();
     }
 }

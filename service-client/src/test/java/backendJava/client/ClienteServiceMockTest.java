@@ -26,7 +26,7 @@ public class ClienteServiceMockTest {
     private ClienteRepository clienteRepository;
 
     private ClienteService clienteService;
-
+/*
     @BeforeEach
     public void setup(){
         MockitoAnnotations.openMocks(this);
@@ -99,4 +99,6 @@ public class ClienteServiceMockTest {
         Assertions.assertThat(found).isNotNull();
         Assertions.assertThat(found.getApellidos()).isEqualTo(cliente.getApellidos());
     }
+    */
+
 }

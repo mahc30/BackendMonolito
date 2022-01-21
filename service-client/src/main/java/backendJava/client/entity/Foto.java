@@ -7,8 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,5 +28,16 @@ public class Foto implements Serializable {
     @ApiModelProperty(hidden = true)
     private String id;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @NotNull
     private Binary file;
+
+    public static Binary convertMultipartToBinary(MultipartFile file){
+        Binary bin = null;
+        try{
+            bin = new Binary(BsonBinarySubType.BINARY, file.getBytes());
+        }
+        finally {
+            return bin;
+        }
+    }
 }

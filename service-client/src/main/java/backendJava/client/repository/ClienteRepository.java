@@ -9,4 +9,6 @@ import java.util.List;
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     public Cliente findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroIdentificacion);
+
+    public List<Cliente> findByEdadGreaterThan(Long edad);
 }

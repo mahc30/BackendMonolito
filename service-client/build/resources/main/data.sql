@@ -1,15 +1,9 @@
-INSERT INTO ciudad (nombre) VALUES( 'Medellin');
-INSERT INTO ciudad (nombre) VALUES('Bogotá');
-INSERT INTO ciudad (nombre) VALUES( 'Barranquilla');
+INSERT INTO cliente(nombres, apellidos, tipo_identificacion,numeroIdentificacion, ciudad,  edad, fotoMongoId)
+VALUES ('Miguel', 'Hincapie C', 'CC', '100203403', 'Medellin', 21, 'todo');
 
-INSERT INTO tipoid(tipo) VALUES('TI');
-INSERT INTO tipoid(tipo) VALUES('CC');
+INSERT INTO cliente(nombres, apellidos, tipo_identificacion,numeroIdentificacion, ciudad,  edad, fotoMongoId)
+VALUES ('Alexander', 'Hamilton', 'CE', '66666666', 'Bogota', 65, 'todo');
 
-INSERT INTO cliente(nombres, apellidos, numeroIdentificacion, ciudad_id, tipo_id, edad, fotoMongoId)
-VALUES ('Miguel', 'Hincapie C', '100203403', 1, 1, 21, 'todo');
+INSERT INTO cliente(nombres, apellidos, tipo_identificacion,numeroIdentificacion, ciudad,  edad, fotoMongoId)
+VALUES ('IntelliJ', 'Idea', 'NIT', '2635413', 'Cali', 30, 'todo');
 
-INSERT INTO cliente(nombres, apellidos, numeroIdentificacion, ciudad_id, tipo_id, edad, fotoMongoId)
-VALUES ('Carlos', 'Apellido Original', '244645', 1, 2, 55, 'todo');
-
-INSERT INTO cliente(nombres, apellidos, numeroIdentificacion, ciudad_id, tipo_id, edad, fotoMongoId)
-VALUES ('Eclipse', 'Foundation', '4984989', 3, 1, 44, 'todo');
