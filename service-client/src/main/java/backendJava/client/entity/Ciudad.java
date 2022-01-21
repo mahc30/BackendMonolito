@@ -15,7 +15,6 @@ import javax.persistence.Id;
 @Data
 @AllArgsConstructor @NoArgsConstructor @Builder
 @Entity
-@Table(name = "CIUDAD")
 public class Ciudad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

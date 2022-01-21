@@ -12,7 +12,6 @@ import javax.persistence.*;
 @Entity
 @Data
 @AllArgsConstructor @NoArgsConstructor @Builder
-@Table(name="CLIENTE")
 public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
