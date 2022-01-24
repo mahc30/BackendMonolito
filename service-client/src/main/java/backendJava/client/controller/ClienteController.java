@@ -32,6 +32,14 @@ public class ClienteController {
         return ResponseEntity.ok(clients);
     }
 
+    @GetMapping(value="/{edad}")
+    public ResponseEntity<List<Cliente>> filterClienteByEdad(@PathVariable("edad") int edad){
+        List<Cliente> clients = clienteService.findByEdadGreaterThan(edad);
+        if(clients.isEmpty()) return ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok(clients);
+    }
+
     @GetMapping(value="/{tipoIdentificacionId}/{numeroIdentificacion}")
     public ResponseEntity<Cliente> getCliente(@PathVariable("tipoIdentificacionId") TipoIdentificacion tipoIdentificacion,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
 
