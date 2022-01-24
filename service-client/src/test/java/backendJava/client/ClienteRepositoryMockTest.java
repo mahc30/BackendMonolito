@@ -9,67 +9,35 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@DataJpaTest
+@SpringBootTest
 public class ClienteRepositoryMockTest {
-
-    private List<Cliente> clientes;
 
     @Autowired
     private ClienteRepository clienteRepository;
 
     @BeforeEach
     public void setup(){
-        clientes.add(Cliente.builder()
-                .nombres("Juanito")
-                .apellidos("Alcachofa")
-                .numeroIdentificacion("188941981")
-                .fotoMongoId("TODO")
-                .ciudad(Ciudad.Cali)
-                        .edad(18)
-                .tipoIdentificacion(TipoIdentificacion.CC)
-                .build());
 
-        clientes.add(Cliente.builder()
-                .nombres("Brian")
-                .apellidos("AAAA")
-                .numeroIdentificacion("5326262")
-                .fotoMongoId("TODO")
-                .ciudad(Ciudad.Medellin)
-                .edad(30)
-                .tipoIdentificacion(TipoIdentificacion.CC)
-                .build());
-
-        clientes.add(Cliente.builder()
-                .nombres("Olaf")
-                .apellidos("SE")
-                .numeroIdentificacion("3757634")
-                .fotoMongoId("TODO")
-                .ciudad(Ciudad.Cali)
-                .edad(37)
-                .tipoIdentificacion(TipoIdentificacion.CC)
-                .build());
-
-        clientes.forEach(cliente -> {clienteRepository.save(cliente);});
     }
 
     @Test
     public void whenFindByTipoIdentificacion_thenReturnListCliente(){
 
-        Cliente founds = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(clientes.get(0).getTipoIdentificacion(), clientes.get(0).getNumeroIdentificacion());
+        Cliente found = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion.CC, "100203403");
 
-        Assertions.assertThat(founds).isNotNull();
-        Assertions.assertThat(founds.getNumeroIdentificacion()).isEqualTo("188941981");
+        Assertions.assertThat(found).isNotNull();
+        Assertions.assertThat(found.getNumeroIdentificacion()).isEqualTo("100203403");
     }
 
     @Test
     public void whenFilterByEdad_ThenReturnListCliente(){
-        List<Cliente> founds = clienteRepository.findByEdadGreaterThan(20L);
-
-        Assertions.assertThat(founds.size()).isEqualTo(2);
-        Assertions.assertThat(founds.get(1).getNumeroIdentificacion()).isEqualTo("3757634");
+        List<Cliente> founds = clienteRepository.findByEdadGreaterThan(20);
+        Assertions.assertThat(founds.size()).isEqualTo(3);
     }
 
 }

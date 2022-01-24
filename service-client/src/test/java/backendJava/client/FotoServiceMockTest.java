@@ -10,6 +10,7 @@ import backendJava.client.service.FotoService;
 import org.assertj.core.api.Assertions;
 import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,8 @@ public class FotoServiceMockTest {
     @Autowired
     private FotoService fotoService;
 
+    private String testImageId;
+
     @Test
     public void whenValidGetAllFoto_ThenReturnListFoto(){
         List<Foto> found = fotoService.listAllFoto();
@@ -34,7 +37,8 @@ public class FotoServiceMockTest {
 
     @Test
     public void whenValidGetFotoById_ThenReturnFoto(){
-        Foto found = fotoService.getFoto("61e98b707618667ecf9750af");
+        List<Foto> founds = fotoService.listAllFoto();
+        Foto found = fotoService.getFoto(founds.get(0).getId());
         Assertions.assertThat(found).isNotNull();
     }
 

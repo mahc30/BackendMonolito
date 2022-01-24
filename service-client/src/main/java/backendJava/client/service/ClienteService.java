@@ -12,6 +12,6 @@ public interface ClienteService {
     public Cliente updateCliente(Cliente cliente);
     public void deleteCliente(Long id);
     public Cliente findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroIdentificacion);
-    public List<Cliente> findByEdadGreaterThan(Long edad);
+    public List<Cliente> findByEdadGreaterThan(int edad);
 
 }

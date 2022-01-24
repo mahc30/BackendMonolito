@@ -3,6 +3,7 @@ package backendJava.client.service;
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
 import backendJava.client.repository.ClienteRepository;
+import backendJava.client.repository.FotoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClienteServiceImpl implements ClienteService{
     private final ClienteRepository clienteRepository;
+    private final FotoRepository fotoRepository;
 
     @Override
     public List<Cliente> listAllCliente() {
@@ -48,6 +50,8 @@ public class ClienteServiceImpl implements ClienteService{
     @Override
     public void deleteCliente(Long id) {
         Cliente clienteDB = getCliente(id);
+        fotoRepository.deleteById(clienteDB.getFotoMongoId());
+
         if(clienteDB != null) clienteRepository.deleteById(id);
     }
 
@@ -60,8 +64,10 @@ public class ClienteServiceImpl implements ClienteService{
     }
 
     @Override
-    public List<Cliente> findByEdadGreaterThan(Long edad) {
+    public List<Cliente> findByEdadGreaterThan(int edad) {
         List<Cliente> clientes = clienteRepository.findByEdadGreaterThan(edad);
         return clientes;
     }
+
+
 }
