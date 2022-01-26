@@ -2,6 +2,7 @@ package backendJava.client.service;
 
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
+import backendJava.client.exception.EmptyListException;
 import backendJava.client.repository.ClienteRepository;
 import backendJava.client.repository.FotoRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,9 @@ public class ClienteServiceImpl implements ClienteService{
 
     @Override
     public List<Cliente> listAllCliente() {
+
+        List<Cliente> clients = clienteRepository.findAll();
+        if(clients.isEmpty()) throw new EmptyListException();
         return clienteRepository.findAll();
     }
 
@@ -66,6 +70,7 @@ public class ClienteServiceImpl implements ClienteService{
     @Override
     public List<Cliente> findByEdadGreaterThan(int edad) {
         List<Cliente> clientes = clienteRepository.findByEdadGreaterThan(edad);
+        if(clientes.isEmpty()) throw new EmptyListException();
         return clientes;
     }
 

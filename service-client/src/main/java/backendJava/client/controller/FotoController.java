@@ -55,10 +55,10 @@ public class FotoController {
         Cliente clienteDB = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(tipoId, numeroId);
         if(clienteDB == null) throw new ClienteNotFoundException(tipoId, numeroId);
 
-        Foto foto = Foto.builder().build();
-        foto.setFile(Foto.convertMultipartToBinary(file));
+        Foto foto = Foto.builder().file(Foto.convertMultipartToBinary(file)).build();
         Foto createdFoto = fotoService.createFoto(foto);
 
+        fotoService.deleteFoto(clienteDB.getFotoMongoId());
         clienteDB.setFotoMongoId(createdFoto.getId());
         clienteService.updateCliente(clienteDB);
 

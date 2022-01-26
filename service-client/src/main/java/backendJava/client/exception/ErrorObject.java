@@ -15,5 +15,5 @@ public class ErrorObject {
 
     private int status;
     private String message;
-    private List<String> errors;
+    private String exception_name;
 }

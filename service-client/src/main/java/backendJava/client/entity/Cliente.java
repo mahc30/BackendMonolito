@@ -26,7 +26,7 @@ public class Cliente {
 
     @NotEmpty
     private String apellidos;
-
+ 
     @Column(name = "NUMEROIDENTIFICACION")
     @NotEmpty
     @Pattern(regexp="^(0|[1-9][0-9]*)$", message = "El número de identificación solo puede contener números") //Validate string is number

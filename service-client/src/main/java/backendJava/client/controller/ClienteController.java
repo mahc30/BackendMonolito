@@ -27,16 +27,12 @@ public class ClienteController {
     @GetMapping
     public ResponseEntity<List<Cliente>> listCliente(){
         List<Cliente> clients = clienteService.listAllCliente();
-        if(clients.isEmpty()) return ResponseEntity.noContent().build();
-
         return ResponseEntity.ok(clients);
     }
 
     @GetMapping(value="/{edad}")
     public ResponseEntity<List<Cliente>> filterClienteByEdad(@PathVariable("edad") int edad){
         List<Cliente> clients = clienteService.findByEdadGreaterThan(edad);
-        if(clients.isEmpty()) return ResponseEntity.noContent().build();
-
         return ResponseEntity.ok(clients);
     }
 

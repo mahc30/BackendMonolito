@@ -7,77 +7,67 @@ import backendJava.client.exception.Foto.FotoFileConversionErrorException;
 import backendJava.client.exception.Foto.FotoNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ControllerAdvice
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ClienteNotFoundException.class)
-    public ResponseEntity<ErrorObject> handleClienteNotFoundException(ClienteNotFoundException ex) {
-        ErrorObject error = ErrorObject.builder()
-                .status(HttpStatus.NOT_FOUND.value())
-                .message(ex.getMessage())
-                .build();
+    private static final String OCURRIO_UN_ERROR_FAVOR_CONTACTAR_AL_ADMINISTRADOR = "Ocurrió un error favor contactar al administrador.";
+    private static final ConcurrentHashMap<String, Integer> STATUS_CODES = new ConcurrentHashMap<>();
 
-        return new ResponseEntity<ErrorObject>(error, HttpStatus.NOT_FOUND);
+    public ControllerAdvisor() {
+        STATUS_CODES.put(
+                ClienteNotFoundException.class.getSimpleName(), HttpStatus.NOT_FOUND.value()
+        );
+
+        STATUS_CODES.put(
+                ClienteAlreadyExistsException.class.getSimpleName(), HttpStatus.CONFLICT.value()
+        );
+
+        STATUS_CODES.put(
+                EmptyListException.class.getSimpleName(), HttpStatus.NOT_FOUND.value()
+        );
+        STATUS_CODES.put(
+                FotoNotFoundException.class.getSimpleName(), HttpStatus.NOT_FOUND.value()
+        );
+        STATUS_CODES.put(
+                FotoFileConversionErrorException.class.getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR.value()
+        );
+        STATUS_CODES.put(
+                FotoDeleteErrorException.class.getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR.value()
+        );
+        STATUS_CODES.put(
+                ConstraintViolationException.class.getSimpleName(), HttpStatus.BAD_REQUEST.value()
+        );
     }
 
-    @ExceptionHandler(ClienteAlreadyExistsException.class)
-    public ResponseEntity<ErrorObject> handleClienteAlreadyExistsException(ClienteAlreadyExistsException ex) {
-        ErrorObject error = ErrorObject.builder()
-                .status(HttpStatus.CONFLICT.value())
-                .message(ex.getMessage())
-                .build();
+    @ExceptionHandler(Exception.class)
+    public final ResponseEntity<ErrorObject> handleAllExceptions(Exception exception) {
 
-        return new ResponseEntity<ErrorObject>(error, HttpStatus.CONFLICT);
-    }
+        ResponseEntity<ErrorObject> result;
 
-    @ExceptionHandler(FotoNotFoundException.class)
-    public ResponseEntity<ErrorObject> handleFotoNotFoundException(FotoNotFoundException ex){
-        ErrorObject error = ErrorObject.builder()
-                .status(HttpStatus.NOT_FOUND.value())
-                .message(ex.getMessage())
-                .build();
-
-        return new ResponseEntity<ErrorObject>(error, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(FotoFileConversionErrorException.class)
-    public ResponseEntity<ErrorObject> handleFotoFileConversionErrorException(FotoFileConversionErrorException ex){
-        ErrorObject error = ErrorObject.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message(ex.getMessage())
-                .build();
-
-        return new ResponseEntity<ErrorObject>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(FotoDeleteErrorException.class)
-    public ResponseEntity<ErrorObject> handleFotoDeleteErrorException(FotoDeleteErrorException ex){
-        ErrorObject error = ErrorObject.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message(ex.getMessage())
-                .build();
-
-        return new ResponseEntity<ErrorObject>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorObject> handleConstraintViolationException(ConstraintViolationException ex){
-        String errorMessage = new ArrayList<>(ex.getConstraintViolations()).get(0).getMessage();
+        String excepcionNombre = exception.getClass().getSimpleName();
+        String mensaje = exception.getMessage();
+        Integer codigo = STATUS_CODES.get(excepcionNombre);
 
         ErrorObject error = ErrorObject.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(errorMessage)
+                .exception_name(excepcionNombre)
+                .status(codigo)
+                .message(mensaje)
                 .build();
 
-        return new ResponseEntity<ErrorObject>(error, HttpStatus.BAD_REQUEST);
+        if (codigo != null) {
+            result = new ResponseEntity<ErrorObject>(error, HttpStatus.valueOf(codigo));
+        }
+        else {
+            result = new ResponseEntity<ErrorObject>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return result;
     }
 }
