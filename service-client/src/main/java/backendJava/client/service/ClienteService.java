@@ -10,7 +10,7 @@ public interface ClienteService {
     public Cliente getCliente(Long id);
     public Cliente createCliente(Cliente cliente);
     public Cliente updateCliente(Cliente cliente);
-    public void deleteCliente(Long id);
+    public void deleteCliente(TipoIdentificacion tipoId, String numeroIdentificacion);
     public Cliente findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroIdentificacion);
     public List<Cliente> findByEdadGreaterThan(int edad);
 

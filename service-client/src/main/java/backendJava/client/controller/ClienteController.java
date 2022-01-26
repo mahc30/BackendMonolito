@@ -15,7 +15,6 @@ import javax.validation.Valid;
 
 import java.util.List;
 
-
 @RestController
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 @RequestMapping(value = "/clients", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,57 +25,34 @@ public class ClienteController {
 
     @GetMapping
     public ResponseEntity<List<Cliente>> listCliente(){
-        List<Cliente> clients = clienteService.listAllCliente();
-        return ResponseEntity.ok(clients);
+        return ResponseEntity.ok(clienteService.listAllCliente());
     }
 
     @GetMapping(value="/{edad}")
     public ResponseEntity<List<Cliente>> filterClienteByEdad(@PathVariable("edad") int edad){
-        List<Cliente> clients = clienteService.findByEdadGreaterThan(edad);
-        return ResponseEntity.ok(clients);
+        return ResponseEntity.ok(clienteService.findByEdadGreaterThan(edad));
     }
 
     @GetMapping(value="/{tipoIdentificacionId}/{numeroIdentificacion}")
     public ResponseEntity<Cliente> getCliente(@PathVariable("tipoIdentificacionId") TipoIdentificacion tipoIdentificacion,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
-
-        Cliente client = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(
+        return  ResponseEntity.ok(clienteService.findByTipoIdentificacionAndNumeroIdentificacion(
                 tipoIdentificacion,
-                numeroIdentificacion );
-
-        if(client == null) throw new ClienteNotFoundException(tipoIdentificacion, numeroIdentificacion);
-        return  ResponseEntity.ok(client);
+                numeroIdentificacion));
     }
 
     @PostMapping
     public ResponseEntity<Cliente> createCliente( @RequestBody Cliente client){
-
-        Cliente clienteDB = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(client.getTipoIdentificacion(), client.getNumeroIdentificacion());
-        if(clienteDB != null) throw new ClienteAlreadyExistsException(clienteDB.getTipoIdentificacion(), clienteDB.getNumeroIdentificacion());
-
-        clienteDB = clienteService.createCliente(client);
-        return ResponseEntity.status(HttpStatus.CREATED).body(clienteDB);
+        return ResponseEntity.ok(clienteService.createCliente(client));
     }
 
     @PutMapping(value="/{tipoIdentificacionId}/{numeroIdentificacion}")
     public ResponseEntity<Cliente> updateCliente(@RequestBody Cliente client, @PathVariable("tipoIdentificacionId") TipoIdentificacion tipoIdentificacion,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
-        Cliente clienteDB = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(tipoIdentificacion, numeroIdentificacion);
-        if(clienteDB == null) throw new ClienteNotFoundException(client.getTipoIdentificacion(), client.getNumeroIdentificacion());
-
-        client.setId(clienteDB.getId());
-        clienteDB = clienteService.updateCliente(client);
-
-        return ResponseEntity.ok(clienteDB);
+        return ResponseEntity.ok(clienteService.updateCliente(client));
     }
 
     @DeleteMapping(value="/{tipoIdentificacionId}/{numeroIdentificacion}")
     public ResponseEntity<Cliente> deleteCliente(@PathVariable("tipoIdentificacionId") TipoIdentificacion tipoIdentificacion,@PathVariable("numeroIdentificacion") String numeroIdentificacion){
-        Cliente client = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(
-                tipoIdentificacion,
-                numeroIdentificacion);
-
-        if(client == null) throw new ClienteNotFoundException(tipoIdentificacion, numeroIdentificacion);
-
-        clienteService.deleteCliente(client.getId());
+        clienteService.deleteCliente(tipoIdentificacion, numeroIdentificacion);
         return  ResponseEntity.ok().build();
     }
 }

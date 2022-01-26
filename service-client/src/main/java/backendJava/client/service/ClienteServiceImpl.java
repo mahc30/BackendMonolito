@@ -2,6 +2,8 @@ package backendJava.client.service;
 
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
+import backendJava.client.exception.Cliente.ClienteAlreadyExistsException;
+import backendJava.client.exception.Cliente.ClienteNotFoundException;
 import backendJava.client.exception.EmptyListException;
 import backendJava.client.repository.ClienteRepository;
 import backendJava.client.repository.FotoRepository;
@@ -18,9 +20,6 @@ public class ClienteServiceImpl implements ClienteService{
 
     @Override
     public List<Cliente> listAllCliente() {
-
-        List<Cliente> clients = clienteRepository.findAll();
-        if(clients.isEmpty()) throw new EmptyListException();
         return clienteRepository.findAll();
     }
 
@@ -31,6 +30,9 @@ public class ClienteServiceImpl implements ClienteService{
 
     @Override
     public Cliente createCliente(Cliente cliente) {
+        Cliente clienteDB = this.findByTipoIdentificacionAndNumeroIdentificacion(cliente.getTipoIdentificacion(), cliente.getNumeroIdentificacion());
+        if(clienteDB != null) throw new ClienteAlreadyExistsException(clienteDB.getTipoIdentificacion(), clienteDB.getNumeroIdentificacion());
+
         return clienteRepository.save(cliente);
     }
 
@@ -38,7 +40,7 @@ public class ClienteServiceImpl implements ClienteService{
     public Cliente updateCliente(Cliente cliente) {
 
         Cliente clienteDB = getCliente(cliente.getId());
-        if(clienteDB == null) return null;
+        if(clienteDB == null) throw new ClienteNotFoundException(cliente.getTipoIdentificacion(), cliente.getNumeroIdentificacion());
 
         clienteDB.setNombres(cliente.getNombres());
         clienteDB.setApellidos(cliente.getApellidos());
@@ -52,18 +54,21 @@ public class ClienteServiceImpl implements ClienteService{
     }
 
     @Override
-    public void deleteCliente(Long id) {
-        Cliente clienteDB = getCliente(id);
-        fotoRepository.deleteById(clienteDB.getFotoMongoId());
+    public void deleteCliente(TipoIdentificacion tipoIdentificacion, String numeroIdentificacion) {
 
-        if(clienteDB != null) clienteRepository.deleteById(id);
+        Cliente clienteDB = this.findByTipoIdentificacionAndNumeroIdentificacion(
+                tipoIdentificacion,
+                numeroIdentificacion);
+
+        if(clienteDB == null) throw new ClienteNotFoundException(tipoIdentificacion, numeroIdentificacion);
+
+        fotoRepository.deleteById(clienteDB.getFotoMongoId());
+        if(clienteDB != null) clienteRepository.deleteById(clienteDB.getId());
     }
 
     @Override
-    public Cliente findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroIdentificacion) {
-        Cliente cliente = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(tipoId, numeroIdentificacion);
-        if(cliente == null) return null;
-
+    public Cliente findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroId) {
+        Cliente cliente = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(tipoId, numeroId);
         return cliente;
     }
 

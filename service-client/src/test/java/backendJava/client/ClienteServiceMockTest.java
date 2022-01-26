@@ -55,14 +55,14 @@ public class ClienteServiceMockTest {
                 .numeroIdentificacion("123456")
                 .fotoMongoId("foto123")
                 .ciudad(Ciudad.Medellin)
-                .tipoIdentificacion(TipoIdentificacion.CC)
+                .tipoIdentificacion(TipoIdentificacion.NIT)
                 .build();
 
         Mockito.when(clienteRepository.findById(5L))
                 .thenReturn(Optional.of(cliente));
 
         Mockito.when(clienteRepository.save(cliente)).thenReturn(cliente);
-        Mockito.when(clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion.CC,"123456" )).thenReturn(cliente);
+        Mockito.when(clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion.NIT,"123456" )).thenReturn(cliente);
         Mockito.when(clienteService.createCliente(cliente)).thenReturn(cliente);
         Mockito.when(clienteRepository.findByEdadGreaterThan(24)).thenReturn(Arrays.asList(cliente));
         Mockito.when(clienteRepository.findByEdadGreaterThan(26)).thenReturn(new ArrayList<>());
@@ -106,7 +106,7 @@ public class ClienteServiceMockTest {
 
         Cliente cliente = clienteService.getCliente(5L);
         Assertions.assertThat(cliente).isNotNull();
-        clienteService.deleteCliente(cliente.getId());
+        clienteService.deleteCliente(cliente.getTipoIdentificacion(), cliente.getNumeroIdentificacion());
         verify(clienteRepository, times(1)).deleteById(5L);
     }
 

@@ -42,6 +42,7 @@ public class FotoServiceMockTest {
         Assertions.assertThat(found).isNotNull();
     }
 
+    /*
     @Test
     void whenValidUpdateFoto_ThenReturnUpdatedFoto(){
         List<Foto> fotos = fotoService.listAllFoto();
@@ -70,7 +71,6 @@ public class FotoServiceMockTest {
         }
 
     }
-
     @Test
     void whenValidDeleteFoto_ThenGetFotoReturnsNull(){
         List<Foto> fotos = fotoService.listAllFoto();
@@ -84,4 +84,6 @@ public class FotoServiceMockTest {
         Foto found = fotoService.getFoto(upload.getId());
         Assertions.assertThat(found).isNull();
     }
+    */
+
 }

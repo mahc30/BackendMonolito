@@ -35,52 +35,27 @@ public class FotoController {
 
     @GetMapping
     public ResponseEntity<List<Foto>> listFoto(){
-        List<Foto> fotos = fotoService.listAllFoto();
-        if(fotos.isEmpty()) return ResponseEntity.noContent().build();
-
-        return ResponseEntity.ok(fotos);
+        return ResponseEntity.ok(fotoService.listAllFoto());
     }
 
     @GetMapping(value="/{id}")
     public ResponseEntity<Foto> getFoto(@PathVariable("id") String id){
-        Foto found = fotoService.getFoto(id);
-
-        if(found == null) throw new FotoNotFoundException(id);
-        return  ResponseEntity.ok(found);
+        return  ResponseEntity.ok(fotoService.getFoto(id));
     }
 
     @PostMapping(value = "/{tipoIdentificacion}/{NumeroIdentificacion}")
     public ResponseEntity createFoto(@PathVariable("tipoIdentificacion") TipoIdentificacion tipoId, @PathVariable("NumeroIdentificacion") String numeroId, @RequestPart MultipartFile file){
-
-        Cliente clienteDB = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(tipoId, numeroId);
-        if(clienteDB == null) throw new ClienteNotFoundException(tipoId, numeroId);
-
-        Foto foto = Foto.builder().file(Foto.convertMultipartToBinary(file)).build();
-        Foto createdFoto = fotoService.createFoto(foto);
-
-        fotoService.deleteFoto(clienteDB.getFotoMongoId());
-        clienteDB.setFotoMongoId(createdFoto.getId());
-        clienteService.updateCliente(clienteDB);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdFoto);
+        return ResponseEntity.ok(fotoService.createFoto(tipoId, numeroId, file));
     }
 
     @PutMapping(value="/{id}")
     public ResponseEntity updateFoto(@PathVariable("id") String id, @RequestPart MultipartFile file){
-        Foto foto = fotoService.getFoto(id);
-        if(foto == null) throw new FotoNotFoundException(id);
-
-        foto.setFile(Foto.convertMultipartToBinary(file));
-        foto = fotoService.updateFoto(foto);
-
-        return ResponseEntity.ok(foto);
+        return ResponseEntity.ok(fotoService.updateFoto(id, file));
     }
 
     @DeleteMapping(value="/{id}")
     public ResponseEntity<Foto> deleteCliente(@Valid @PathVariable("id") String id){
-        if(fotoService.getFoto(id) == null) throw new FotoNotFoundException(id);
         fotoService.deleteFoto(id);
-        if(fotoService.getFoto(id) != null) throw new FotoDeleteErrorException(id);
         return  ResponseEntity.ok().build();
     }
 }
