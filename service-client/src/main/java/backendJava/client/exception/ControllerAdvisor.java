@@ -30,9 +30,6 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         );
 
         STATUS_CODES.put(
-                EmptyListException.class.getSimpleName(), HttpStatus.NOT_FOUND.value()
-        );
-        STATUS_CODES.put(
                 FotoNotFoundException.class.getSimpleName(), HttpStatus.NOT_FOUND.value()
         );
         STATUS_CODES.put(

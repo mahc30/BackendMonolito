@@ -1,10 +1,11 @@
 package backendJava.client.service;
 
+import backendJava.client.dto.ClienteDTO;
+import backendJava.client.dto.ClienteMapper;
 import backendJava.client.entity.Cliente;
 import backendJava.client.entity.TipoIdentificacion;
 import backendJava.client.exception.Cliente.ClienteAlreadyExistsException;
 import backendJava.client.exception.Cliente.ClienteNotFoundException;
-import backendJava.client.exception.EmptyListException;
 import backendJava.client.repository.ClienteRepository;
 import backendJava.client.repository.FotoRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,27 +20,26 @@ public class ClienteServiceImpl implements ClienteService{
     private final FotoRepository fotoRepository;
 
     @Override
-    public List<Cliente> listAllCliente() {
-        return clienteRepository.findAll();
+    public List<ClienteDTO> listAllCliente() {
+        return ClienteMapper.INSTANCE.mapEntityListToDtoList(clienteRepository.findAll());
     }
 
     @Override
-    public Cliente getCliente(Long id) {
-        return clienteRepository.findById(id).orElse(null);
+    public ClienteDTO getCliente(Long id) {
+        return ClienteMapper.INSTANCE.clienteToClienteDto(clienteRepository.findById(id).orElse(null));
     }
 
     @Override
-    public Cliente createCliente(Cliente cliente) {
-        Cliente clienteDB = this.findByTipoIdentificacionAndNumeroIdentificacion(cliente.getTipoIdentificacion(), cliente.getNumeroIdentificacion());
+    public ClienteDTO createCliente(Cliente cliente) {
+        Cliente clienteDB = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(cliente.getTipoIdentificacion(), cliente.getNumeroIdentificacion());
         if(clienteDB != null) throw new ClienteAlreadyExistsException(clienteDB.getTipoIdentificacion(), clienteDB.getNumeroIdentificacion());
-
-        return clienteRepository.save(cliente);
+        return ClienteMapper.INSTANCE.clienteToClienteDto(clienteRepository.save(cliente));
     }
 
     @Override
-    public Cliente updateCliente(Cliente cliente) {
+    public ClienteDTO updateCliente(Cliente cliente) {
 
-        Cliente clienteDB = getCliente(cliente.getId());
+        Cliente clienteDB = clienteRepository.findById(cliente.getId()).orElse(null);
         if(clienteDB == null) throw new ClienteNotFoundException(cliente.getTipoIdentificacion(), cliente.getNumeroIdentificacion());
 
         clienteDB.setNombres(cliente.getNombres());
@@ -50,34 +50,29 @@ public class ClienteServiceImpl implements ClienteService{
         clienteDB.setNumeroIdentificacion(cliente.getNumeroIdentificacion());
         clienteDB.setFotoMongoId(cliente.getFotoMongoId());
 
-        return clienteRepository.save(clienteDB);
+        return ClienteMapper.INSTANCE.clienteToClienteDto(clienteRepository.save(clienteDB));
     }
 
     @Override
     public void deleteCliente(TipoIdentificacion tipoIdentificacion, String numeroIdentificacion) {
 
-        Cliente clienteDB = this.findByTipoIdentificacionAndNumeroIdentificacion(
-                tipoIdentificacion,
-                numeroIdentificacion);
+        Cliente clienteDB = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(tipoIdentificacion, numeroIdentificacion);
 
         if(clienteDB == null) throw new ClienteNotFoundException(tipoIdentificacion, numeroIdentificacion);
 
         fotoRepository.deleteById(clienteDB.getFotoMongoId());
-        if(clienteDB != null) clienteRepository.deleteById(clienteDB.getId());
+        clienteRepository.deleteById(clienteDB.getId());
     }
 
     @Override
-    public Cliente findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroId) {
-        Cliente cliente = clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(tipoId, numeroId);
-        return cliente;
+    public ClienteDTO findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroId) {
+        return ClienteMapper.INSTANCE.clienteToClienteDto(
+                clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(tipoId, numeroId)
+        );
     }
 
     @Override
-    public List<Cliente> findByEdadGreaterThan(int edad) {
-        List<Cliente> clientes = clienteRepository.findByEdadGreaterThan(edad);
-        if(clientes.isEmpty()) throw new EmptyListException();
-        return clientes;
+    public List<ClienteDTO> findByEdadGreaterThanEqual(int edad) {
+        return ClienteMapper.INSTANCE.mapEntityListToDtoList(clienteRepository.findByEdadGreaterThanEqual(edad));
     }
-
-
 }

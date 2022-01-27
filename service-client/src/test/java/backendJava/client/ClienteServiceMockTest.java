@@ -1,135 +1,145 @@
 package backendJava.client;
 
+import backendJava.client.dto.ClienteDTO;
+import backendJava.client.dto.ClienteMapper;
 import backendJava.client.entity.Ciudad;
 import backendJava.client.entity.Cliente;
-import backendJava.client.entity.Foto;
 import backendJava.client.entity.TipoIdentificacion;
 import backendJava.client.repository.ClienteRepository;
 import backendJava.client.repository.FotoRepository;
 import backendJava.client.service.ClienteService;
 import backendJava.client.service.ClienteServiceImpl;
 import org.assertj.core.api.Assertions;
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class ClienteServiceMockTest {
 
+
+    private ClienteService clienteService;
     @Mock
     private ClienteRepository clienteRepository;
-
     @Mock
     private FotoRepository fotoRepository;
 
-    private ClienteService clienteService;
+    private Cliente cliente1, cliente2;
+
+
 
     @BeforeEach
     public void setup(){
         MockitoAnnotations.openMocks(this);
         clienteService = new ClienteServiceImpl(clienteRepository, fotoRepository);
 
-        Foto foto = Foto.builder().id("foto123").build();
-
-        Cliente cliente = Cliente.builder()
-                .id(5L)
-                .nombres("Juanito")
-                .apellidos("Alcachofa")
-                .numeroIdentificacion("123456")
-                .fotoMongoId("foto123")
+        cliente1 = Cliente
+                .builder()
+                .id(1L)
+                .nombres("MA")
+                .apellidos("HC")
                 .ciudad(Ciudad.Medellin)
-                .tipoIdentificacion(TipoIdentificacion.NIT)
+                .fotoMongoId("")
+                .tipoIdentificacion(TipoIdentificacion.CC)
+                .numeroIdentificacion("100203403")
+                .edad(21)
                 .build();
 
-        Mockito.when(clienteRepository.findById(5L))
-                .thenReturn(Optional.of(cliente));
-
-        Mockito.when(clienteRepository.save(cliente)).thenReturn(cliente);
-        Mockito.when(clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion.NIT,"123456" )).thenReturn(cliente);
-        Mockito.when(clienteService.createCliente(cliente)).thenReturn(cliente);
-        Mockito.when(clienteRepository.findByEdadGreaterThan(24)).thenReturn(Arrays.asList(cliente));
-        Mockito.when(clienteRepository.findByEdadGreaterThan(26)).thenReturn(new ArrayList<>());
-
+        cliente2 = Cliente
+                .builder()
+                .id(1L)
+                .nombres("Ho Chi")
+                .apellidos("Minh")
+                .ciudad(Ciudad.Bogota)
+                .fotoMongoId("")
+                .tipoIdentificacion(TipoIdentificacion.CE)
+                .numeroIdentificacion("1976")
+                .edad(79)
+                .build();
     }
 
     @Test
     public void whenValidGetId_ThenReturnCliente(){
-        Cliente found = clienteService.getCliente(5L);
-        Assertions.assertThat(found.getNombres()).isEqualTo("Juanito");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.ofNullable(cliente1));
+
+        ClienteDTO clienteTest =  clienteService.getCliente(1L);
+
+        verify(clienteRepository, times(1)).findById(1L);
+        Assertions.assertThat(clienteTest.getApellidos()).isEqualTo(cliente1.getApellidos());
     }
 
     @Test
     public void whenValidCreateCliente_ThenReturnCliente(){
-        Cliente cliente = Cliente.builder()
-                .id(5L)
-                .nombres("Juanito")
-                .apellidos("Alcachofa")
-                .numeroIdentificacion("123456")
-                .fotoMongoId("foto123")
-                .ciudad(Ciudad.Medellin)
-                .tipoIdentificacion(TipoIdentificacion.CC)
-                .build();
+        when(clienteRepository.save(cliente1)).thenReturn(cliente1);
 
-        Cliente created = clienteService.createCliente(cliente);
-        Assertions.assertThat(created.getId()).isEqualTo(cliente.getId());
+        ClienteDTO client = clienteService.createCliente(cliente1);
+
+        verify(clienteRepository, times(1)).save(cliente1);
     }
 
     @Test
     public void whenValidUpdateCliente_ThenReturnUpdatedCliente(){
-        Cliente cliente = clienteService.getCliente(5L);
-        cliente.setNombres("Hamilton");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.ofNullable(cliente1));
+        when(clienteRepository.save(cliente1)).thenReturn(cliente1);
+        when(clienteRepository.save(cliente2)).thenReturn(cliente2);
 
-        Cliente updated = clienteService.updateCliente(cliente);
-        Assertions.assertThat(updated.getNombres()).isEqualTo("Hamilton");
-        Assertions.assertThat(updated.getApellidos()).isEqualTo("Alcachofa");
+        ClienteDTO clienteTest = clienteService.updateCliente(cliente1);
+
+        verify(clienteRepository, times(1)).save(cliente1);
+        Assertions.assertThat(clienteTest.getEdad()).isEqualTo(cliente1.getEdad());
+
+        clienteTest = clienteService.updateCliente(cliente2);
+
+        verify(clienteRepository, times(2)).save(cliente2);
+        Assertions.assertThat(clienteTest.getApellidos()).isEqualTo(cliente2.getApellidos());
+
     }
 
     @Test
     public void whenValidDeleteCliente_ThenReturnVerifyMethodIsCalled(){
+        when(clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion.CC, "100203403")).thenReturn(cliente1);
 
-        Cliente cliente = clienteService.getCliente(5L);
-        Assertions.assertThat(cliente).isNotNull();
-        clienteService.deleteCliente(cliente.getTipoIdentificacion(), cliente.getNumeroIdentificacion());
-        verify(clienteRepository, times(1)).deleteById(5L);
+        clienteService.deleteCliente(cliente1.getTipoIdentificacion(),cliente1.getNumeroIdentificacion());
+        verify(clienteRepository, times(1)).deleteById(1L);
     }
 
     @Test
     public void whenValidfindByTipoIdentificacionAndNumeroIdentificacion_ThenReturnClient(){
-        Cliente cliente = clienteService.getCliente(5L);
-        Cliente found = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(cliente.getTipoIdentificacion(), cliente.getNumeroIdentificacion());
-        Assertions.assertThat(cliente).isNotNull();
-        Assertions.assertThat(found).isNotNull();
-        Assertions.assertThat(found.getApellidos()).isEqualTo(cliente.getApellidos());
+        when(clienteRepository.findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion.CC, "100203403")).thenReturn(cliente1);
+
+        ClienteDTO clienteTest = clienteService.findByTipoIdentificacionAndNumeroIdentificacion(cliente1.getTipoIdentificacion(), cliente1.getNumeroIdentificacion());
+
+        verify(clienteRepository, times(1)).findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion.CC, "100203403");
+        Assertions.assertThat(clienteTest.getEdad()).isEqualTo(cliente1.getEdad());
     }
 
     @Test
     public void whenValidFindByEdadGreaterThan_ThenReturnClientList(){
-        List<Cliente> clientes = clienteService.findByEdadGreaterThan(24);
+        List<Cliente> mockReturnList = Arrays.asList(new Cliente[]{cliente1, cliente2});
 
-        Assertions.assertThat(clientes.size()).isEqualTo(1);
+        doReturn(mockReturnList).when(clienteRepository).findByEdadGreaterThanEqual(21);
+
+        List<ClienteDTO> founds = clienteService.findByEdadGreaterThanEqual(21);
+
+        Assertions.assertThat(founds.size()).isEqualTo(2);
+
     }
 
     @Test
     public void whenFindByEdadGreaterThanAnyClientAge_ThenReturnEmptyList(){
-        List<Cliente> clientes = clienteService.findByEdadGreaterThan(26);
+        when(clienteRepository.findByEdadGreaterThanEqual(70)).thenReturn(Arrays.asList(new Cliente[]{cliente2}));
 
-        Assertions.assertThat(clientes.size()).isEqualTo(0);
+        List<ClienteDTO> founds = clienteService.findByEdadGreaterThanEqual(70);
+
+        Assertions.assertThat(founds.size()).isEqualTo(1);
+        Assertions.assertThat(founds.get(0).getNombres()).isEqualTo(cliente2.getNombres());
     }
 }

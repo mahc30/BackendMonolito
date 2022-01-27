@@ -1,5 +1,6 @@
 package backendJava.client.service;
 
+import backendJava.client.dto.FotoDTO;
 import backendJava.client.entity.Foto;
 import backendJava.client.entity.TipoIdentificacion;
 import org.springframework.web.multipart.MultipartFile;
@@ -7,10 +8,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface FotoService {
-    public List<Foto> listAllFoto();
+    public List<FotoDTO> listAllFoto();
 
-    public Foto getFoto(String id);
-    public Foto createFoto(TipoIdentificacion tipoId, String numeroIdentificacion, MultipartFile file);
-    public Foto updateFoto(String id, MultipartFile file);
-    public void deleteFoto(String id);
+    public FotoDTO getFoto(String id);
+    public FotoDTO createFoto(TipoIdentificacion tipoId, String numeroId, MultipartFile file);
+    public FotoDTO updateFoto(String id, MultipartFile file);
+    public void deleteFoto(TipoIdentificacion tipoId, String numeroId, String id);
 }

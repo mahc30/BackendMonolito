@@ -36,7 +36,7 @@ public class ClienteRepositoryMockTest {
 
     @Test
     public void whenFilterByEdad_ThenReturnListCliente(){
-        List<Cliente> founds = clienteRepository.findByEdadGreaterThan(20);
+        List<Cliente> founds = clienteRepository.findByEdadGreaterThanEqual(20);
         Assertions.assertThat(founds.size()).isEqualTo(3);
     }
 

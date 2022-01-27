@@ -1,6 +1,5 @@
 package backendJava.client.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 @Entity
@@ -32,8 +30,10 @@ public class Cliente {
     @Pattern(regexp="^(0|[1-9][0-9]*)$", message = "El número de identificación solo puede contener números") //Validate string is number
     private String numeroIdentificacion;
 
+    @ApiModelProperty(hidden = true)
     @Column(name = "FOTOMONGOID")
-    private String fotoMongoId; //String identificación de Mongo
+    @Builder.Default
+    private String fotoMongoId = ""; //String identificación de Mongo
 
     @Min(value = 18, message = "La edad debe ser mayor o igual a 18")
     private int edad;

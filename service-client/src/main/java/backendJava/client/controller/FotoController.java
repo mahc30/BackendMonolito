@@ -1,25 +1,17 @@
 package backendJava.client.controller;
 
-import backendJava.client.entity.Cliente;
+import backendJava.client.dto.FotoDTO;
 import backendJava.client.entity.Foto;
 import backendJava.client.entity.TipoIdentificacion;
-import backendJava.client.exception.Cliente.ClienteNotFoundException;
-import backendJava.client.exception.Foto.FotoDeleteErrorException;
-import backendJava.client.exception.Foto.FotoFileConversionErrorException;
-import backendJava.client.exception.Foto.FotoNotFoundException;
 import backendJava.client.service.ClienteService;
 import backendJava.client.service.FotoService;
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -34,28 +26,30 @@ public class FotoController {
     ClienteService clienteService;
 
     @GetMapping
-    public ResponseEntity<List<Foto>> listFoto(){
+    public ResponseEntity<List<FotoDTO>> listFoto(){
         return ResponseEntity.ok(fotoService.listAllFoto());
     }
 
     @GetMapping(value="/{id}")
-    public ResponseEntity<Foto> getFoto(@PathVariable("id") String id){
-        return  ResponseEntity.ok(fotoService.getFoto(id));
+    public ResponseEntity<FotoDTO> getFoto(@PathVariable("id") String id){
+        FotoDTO foto = fotoService.getFoto(id);
+        if(foto == null) return ResponseEntity.noContent().build();
+        else return  ResponseEntity.ok(foto);
     }
 
     @PostMapping(value = "/{tipoIdentificacion}/{NumeroIdentificacion}")
-    public ResponseEntity createFoto(@PathVariable("tipoIdentificacion") TipoIdentificacion tipoId, @PathVariable("NumeroIdentificacion") String numeroId, @RequestPart MultipartFile file){
+    public ResponseEntity<FotoDTO> createFoto(@PathVariable("tipoIdentificacion") TipoIdentificacion tipoId, @PathVariable("NumeroIdentificacion") String numeroId, @RequestPart MultipartFile file){
         return ResponseEntity.ok(fotoService.createFoto(tipoId, numeroId, file));
     }
 
     @PutMapping(value="/{id}")
-    public ResponseEntity updateFoto(@PathVariable("id") String id, @RequestPart MultipartFile file){
+    public ResponseEntity<FotoDTO> updateFoto(@PathVariable("id") String id, @RequestPart MultipartFile file){
         return ResponseEntity.ok(fotoService.updateFoto(id, file));
     }
 
-    @DeleteMapping(value="/{id}")
-    public ResponseEntity<Foto> deleteCliente(@Valid @PathVariable("id") String id){
-        fotoService.deleteFoto(id);
+    @DeleteMapping(value="/{tipoIdentificacion}/{NumeroIdentificacion}/{id}")
+    public ResponseEntity<FotoDTO> deleteCliente(@PathVariable("id") String id, @PathVariable("tipoIdentificacion") TipoIdentificacion tipoId, @PathVariable("NumeroIdentificacion") String numeroId){
+        fotoService.deleteFoto(tipoId, numeroId, id);
         return  ResponseEntity.ok().build();
     }
 }

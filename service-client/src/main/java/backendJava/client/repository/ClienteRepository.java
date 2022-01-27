@@ -10,5 +10,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
     public Cliente findByTipoIdentificacionAndNumeroIdentificacion(TipoIdentificacion tipoId, String numeroIdentificacion);
 
-    public List<Cliente> findByEdadGreaterThan(int edad);
+    public List<Cliente> findByEdadGreaterThanEqual(int edad);
 }
