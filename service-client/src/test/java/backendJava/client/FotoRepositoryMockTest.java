@@ -47,4 +47,28 @@ public class FotoRepositoryMockTest {
             System.out.println(e);
         }
     }
+
+    @Test
+    void testDeleteFoto(){
+
+        byte[] img;
+        MultipartFile imagenTest;
+        Foto foto;
+
+        try {
+            img  = Files.readAllBytes(Paths.get("./testImage.png"));
+            imagenTest = new MockMultipartFile("testImage.png", "testImage.png", "png", img);
+            foto = Foto.builder()
+                    .file(new Binary(BsonBinarySubType.BINARY, imagenTest.getBytes()))
+                    .build();
+            Foto result = fotoRepository.save(foto);
+            Assertions.assertThat(result.getId()).isNotEmpty();
+
+            fotoRepository.deleteById(result.getId());
+            Assertions.assertThat(fotoRepository.findById(result.getId()).orElse(null)).isEqualTo(null);
+
+        } catch (Exception e){
+            System.out.println(e);
+        }
+    }
 }

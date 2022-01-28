@@ -33,7 +33,7 @@ public class FotoController {
     @GetMapping(value="/{id}")
     public ResponseEntity<FotoDTO> getFoto(@PathVariable("id") String id){
         FotoDTO foto = fotoService.getFoto(id);
-        if(foto == null) return ResponseEntity.noContent().build();
+        if(foto == null) return ResponseEntity.notFound().build();
         else return  ResponseEntity.ok(foto);
     }
 
